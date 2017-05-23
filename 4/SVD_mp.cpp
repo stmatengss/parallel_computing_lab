@@ -159,7 +159,7 @@ int main (int argc, char* argv[]){
 								gamma = 0.0;
 
 //								/*
-//								#pragma omp parallel for private(k)  shared(N, i, j, U_t) \
+								#pragma omp parallel for schedule(static, 125) private(k)  shared(N, i, j, U_t) \
 							   		reduction(+:alpha, beta, gamma)
 											for(k = 0; k<N ; k++){
 													alpha = alpha + (U_t[i][k] * U_t[i][k]);
@@ -201,7 +201,7 @@ int main (int argc, char* argv[]){
 
 								//Apply rotations on U and V
 								if (i != j) {
-//										#pragma omp parallel for private(k, t) shared(c, s, U_t, V_t) 
+										#pragma omp parallel for schedule(static, 125)  private(k, t) shared(c, s, U_t, V_t) 
 										for(k=0; k<N; k++){
 												t = U_t[i][k];
 												U_t[i][k] = c*t - s*U_t[j][k];
