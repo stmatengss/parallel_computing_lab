@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -fopenmp
+CXXFLAGS = -O3 -fopenmp
 
 #clean:
 #	rm -rf Validation_mpi Reduction Reduction_mpi 

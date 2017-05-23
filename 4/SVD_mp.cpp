@@ -144,27 +144,29 @@ int main (int argc, char* argv[]){
 		gettimeofday(&start, NULL);
 
 		double conv;
+		int i, j, k;
 		while(converge > epsilon){ 		//convergence
 				converge = 0.0;	
 
 				acum++;				//counter of loops
 
-				for(int i = 1; i<M; i++){
-						for(int j = 0; j<i; j++){
+				for(i = 1; i<M; i++){
+						for(j = 0; j<i; j++){
 
 
 								alpha = 0.0;
 								beta = 0.0;
 								gamma = 0.0;
 
-								int k;
-								#pragma omp parallel for private(k)  shared(N, i, j, U_t) \
+//								/*
+//								#pragma omp parallel for private(k)  shared(N, i, j, U_t) \
 							   		reduction(+:alpha, beta, gamma)
 											for(k = 0; k<N ; k++){
 													alpha = alpha + (U_t[i][k] * U_t[i][k]);
 													beta = beta + (U_t[j][k] * U_t[j][k]);
 													gamma = gamma + (U_t[i][k] * U_t[j][k]);
 											}
+//								*/
 								/*
 								#pragma omp parallel shared(i, j, U_t, alpha, beta, gamma) private(k)
 								{
@@ -199,7 +201,7 @@ int main (int argc, char* argv[]){
 
 								//Apply rotations on U and V
 								if (i != j) {
-//										#pragma omp parallel for private(k, t) shared(c, s, U_t, V_t) num_threads(16)
+//										#pragma omp parallel for private(k, t) shared(c, s, U_t, V_t) 
 										for(k=0; k<N; k++){
 												t = U_t[i][k];
 												U_t[i][k] = c*t - s*U_t[j][k];
@@ -212,7 +214,7 @@ int main (int argc, char* argv[]){
 										}
 
 								} else {
-										for(int k=0; k<N; k++){
+										for(k=0; k<N; k++){
 												t = U_t[i][k];
 												U_t[i][k] = c*t - s*U_t[j][k];
 												U_t[j][k] = s*t + c*U_t[j][k];
@@ -231,6 +233,7 @@ int main (int argc, char* argv[]){
 
 		//Create matrix S
 
+#pragma omp parallel for private(i, j, t) shared(U_t, S)
 		for(int i =0; i<M; i++){
 
 				t=0;
@@ -322,7 +325,7 @@ int main (int argc, char* argv[]){
 
 				ofstream Af;
 				//file for Matrix A
-				Af.open("matrixA.mat"); 
+				Af.open("matrixAmp.mat"); 
 				Af<<"# Created from debug\n# name: A\n# type: matrix\n# rows: "<<M<<"\n# columns: "<<N<<"\n";
 
 
@@ -338,7 +341,7 @@ int main (int argc, char* argv[]){
 				ofstream Uf;
 
 				//File for Matrix U
-				Uf.open("matrixUcpu.mat");
+				Uf.open("matrixUmp.mat");
 				Uf<<"# Created from debug\n# name: Ucpu\n# type: matrix\n# rows: "<<M<<"\n# columns: "<<N<<"\n";
 
 				for(int i = 0; i<M;i++){
@@ -351,7 +354,7 @@ int main (int argc, char* argv[]){
 
 				ofstream Vf;
 				//File for Matrix V
-				Vf.open("matrixVcpu.mat");
+				Vf.open("matrixVmp.mat");
 				Vf<<"# Created from debug\n# name: Vcpu\n# type: matrix\n# rows: "<<M<<"\n# columns: "<<N<<"\n";
 
 				for(int i = 0; i<M;i++){
@@ -366,7 +369,7 @@ int main (int argc, char* argv[]){
 
 				ofstream Sf;
 				//File for Matrix S
-				Sf.open("matrixScpu.mat");
+				Sf.open("matrixSmp.mat");
 				Sf<<"# Created from debug\n# name: Scpu\n# type: matrix\n# rows: "<<M<<"\n# columns: "<<N<<"\n";
 
 
